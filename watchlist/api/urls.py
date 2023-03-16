@@ -6,7 +6,7 @@ from .views import (WatchlistListView, WatchlistDetailView,
                     ReviewListView, ReviewDetailView, ReviewCreateView)
 
 router = DefaultRouter()
-router.register('stream', StreamPlatformView, basename='streamplatform')
+router.register('', StreamPlatformView, basename='streamplatform')
 
 urlpatterns = [
     path('list/', WatchlistListView.as_view(), name='movie-list'),
@@ -20,7 +20,7 @@ urlpatterns = [
     # path('review/', ReviewListView.as_view(), name='review-list'),
     # path('review/<int:pk>/', ReviewDetailView.as_view(), name='review-detail'),
 
-    path('stream/<int:pk>/review-create', ReviewCreateView.as_view(), name='review-create'),
-    path('stream/<int:pk>/review', ReviewListView.as_view(), name='review-list'),
-    path('stream/review/<int:pk>', ReviewDetailView.as_view(), name='review-detail'),
+    path('<int:pk>/review-create/', ReviewCreateView.as_view(), name='review-create'),
+    path('<int:pk>/review/', ReviewListView.as_view(), name='review-list'),
+    path('review/<int:pk>/', ReviewDetailView.as_view(), name='review-detail'),
 ]

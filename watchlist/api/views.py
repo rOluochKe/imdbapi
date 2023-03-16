@@ -3,6 +3,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import api_view
 from rest_framework import mixins
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from watchlist.api.permissions import IsAdminOrReadOnly, IsReviewUserOrReadOnly
 from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import status
@@ -18,6 +20,7 @@ from .serializers import (WatchlistSerializer, StreamPlatformSerializer,
 
 class ReviewCreateView(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Review.objects.all()
@@ -46,6 +49,7 @@ class ReviewCreateView(generics.CreateAPIView):
 class ReviewListView(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -54,6 +58,7 @@ class ReviewListView(generics.ListAPIView):
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [IsReviewUserOrReadOnly]
 
 
 # generic APIViews
@@ -81,6 +86,7 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 class StreamPlatformView(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 # class StreamPlatformView(viewsets.ViewSet):
 #     def list(self, request):
@@ -106,6 +112,8 @@ class StreamPlatformView(viewsets.ModelViewSet):
 # class based views
 
 class StreamPlatformListView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request):
         platform = StreamPlatform.objects.all()
         serializer = StreamPlatformSerializer(platform, many=True, context={'request': request})
@@ -121,6 +129,8 @@ class StreamPlatformListView(APIView):
         
 
 class StreamPlatformDetailView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request, pk):
         try:
             platform = StreamPlatform.objects.get(pk=pk)
@@ -147,6 +157,8 @@ class StreamPlatformDetailView(APIView):
 
 
 class WatchlistListView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request):
         movies = Watchlist.objects.all()
         serializer = WatchlistSerializer(movies, many=True)
@@ -161,6 +173,8 @@ class WatchlistListView(APIView):
             return Response(serializer.errors)
 
 class WatchlistDetailView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request, pk):
         try:
             movie = Watchlist.objects.get(pk=pk)
