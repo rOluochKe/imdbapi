@@ -15,12 +15,30 @@ from watchlist.models import Watchlist, StreamPlatform, Review
 from .serializers import (WatchlistSerializer, StreamPlatformSerializer, 
                           ReviewSerializer)
 
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+from watchlist.api.throttling import ReviewCreateThrottle, ReviewListThrottle
+
 
 # Concreate view classes
+
+class UserReviewReview(generics.ListAPIView):
+    # queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    # permission_classes = [IsAuthenticated]
+    # throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(review_user__username=username)
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        return Review.objects.filter(review_user__username=username)
 
 class ReviewCreateView(generics.CreateAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewCreateThrottle]
 
     def get_queryset(self):
         return Review.objects.all()
@@ -50,6 +68,7 @@ class ReviewListView(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewListThrottle, AnonRateThrottle]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -59,7 +78,7 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [IsReviewUserOrReadOnly]
-
+    throttle_classes = [ScopedRateThrottle, AnonRateThrottle]
 
 # generic APIViews
 
@@ -87,6 +106,7 @@ class StreamPlatformView(viewsets.ModelViewSet):
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
     permission_classes = [IsAdminOrReadOnly]
+    throttle_classes = [AnonRateThrottle]
 
 # class StreamPlatformView(viewsets.ViewSet):
 #     def list(self, request):
@@ -113,6 +133,7 @@ class StreamPlatformView(viewsets.ModelViewSet):
 
 class StreamPlatformListView(APIView):
     permission_classes = [IsAdminOrReadOnly]
+    throttle_classes = [AnonRateThrottle]
 
     def get(self, request):
         platform = StreamPlatform.objects.all()
@@ -130,6 +151,7 @@ class StreamPlatformListView(APIView):
 
 class StreamPlatformDetailView(APIView):
     permission_classes = [IsAdminOrReadOnly]
+    throttle_classes = [AnonRateThrottle]
 
     def get(self, request, pk):
         try:
@@ -158,6 +180,7 @@ class StreamPlatformDetailView(APIView):
 
 class WatchlistListView(APIView):
     permission_classes = [IsAdminOrReadOnly]
+    throttle_classes = [AnonRateThrottle]
 
     def get(self, request):
         movies = Watchlist.objects.all()
@@ -174,6 +197,7 @@ class WatchlistListView(APIView):
 
 class WatchlistDetailView(APIView):
     permission_classes = [IsAdminOrReadOnly]
+    throttle_classes = [AnonRateThrottle]
 
     def get(self, request, pk):
         try:
