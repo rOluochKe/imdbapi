@@ -7,18 +7,16 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        # exclude = ('watchlist',)
-        fields = "__all__"
+        exclude = ('watchlist',)
+        # fields = "__all__"
 
 class WatchlistSerializer(serializers.ModelSerializer):
-    reviews = ReviewSerializer(many=True, read_only=True)
-    # platform = serializers.CharField(source='platform.name')
+    # reviews = ReviewSerializer(many=True, read_only=True)
+    platform = serializers.CharField(source='platform.name')
 
-    class Meta: 
+    class Meta:
         model = Watchlist
-        fields = '__all__'
-        # fields = ['id', 'name', 'description']
-        # exclude = ['name']
+        fields = "__all__"
 
 class StreamPlatformSerializer(serializers.ModelSerializer):
     watchlist = WatchlistSerializer(many=True, read_only=True)
@@ -26,6 +24,7 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
     class Meta:
         model = StreamPlatform
         fields = "__all__"
+
         
 
 # def name_length(value):

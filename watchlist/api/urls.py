@@ -7,7 +7,7 @@ from .views import (WatchlistListView, WatchlistDetailView,
                     WatchlistListGenericView)
 
 router = DefaultRouter()
-router.register('', StreamPlatformView, basename='streamplatform')
+router.register('stream', StreamPlatformView, basename='streamplatform')
 
 urlpatterns = [
     path('list/', WatchlistListView.as_view(), name='movie-list'),
